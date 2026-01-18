@@ -1,0 +1,35 @@
+meta {
+  name: Post Patient
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/patients
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "1",
+    "identificationDocument": "123.123.123-12",
+    "name": "John Doe",
+    "dateOfBirth": "1990-01-01",
+    "gender": "Male",
+    "bloodType": "O+",
+    "address": {
+      "street": "123 Main St",
+      "number": "100",
+      "city": "Springfield",
+      "state": "IL",
+      "zipCode": "62701"
+    },
+    "phoneNumber": "+1234567890",
+    "email": "john.doe@example.com",
+    "emergencyContact": {
+      "name": "Jane Doe",
+      "phoneNumber": "+0987654321"
+    }
+  }
+}

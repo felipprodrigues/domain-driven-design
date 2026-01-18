@@ -1,0 +1,18 @@
+meta {
+  name: Post Working Hours
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3000/api/doctors/2/working-hours
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "day": "Monday",
+    "timeSlot": "08:00 - 12:00"
+  }
+}

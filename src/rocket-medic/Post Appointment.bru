@@ -1,0 +1,22 @@
+meta {
+  name: Post Appointment
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:3000/api/appointments
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "1",
+    "patientId": "1",
+    "doctorId": "2",
+    "date": "2025-03-10T11:00:00",
+    "status": "scheduled",
+    "reason": "Annual Check up"
+  }
+}
