@@ -3,33 +3,33 @@ import { Allergy } from '../entities/record/allergy.js';
 
 export class PatientService {
   constructor(patientRepository) {
+    if (!patientRepository) {
+      throw new Error('PatientRepository is required');
+    }
     this.patientRepository = patientRepository;
   }
 
   addPatient(patientData) {
-    const patient = new Patient(
-      patientData.id,
-      patientData.identificationDocument,
-      patientData.name,
-      patientData.dateOfBirth,
-      patientData.gender,
-      patientData.bloodType,
-      patientData.address,
-      patientData.phoneNumber,
-      patientData.email,
-      patientData.emergencyContact
-    );
+    if (!(patientData instanceof Patient)) {
+      throw new Error('Invalid patient object');
+    }
 
-    this.patientRepository.add(patient.id, patient);
-    return patient;
-  }
+    const id = this.patientRepository.add(patientData);
+    const savedPatient = this.patientRepository.findById(id);
 
-  findPatientById(patientId) {
-    return this.patientRepository.findById(patientId);
+    if (!savedPatient) {
+      throw new Error('Failed to save patient');
+    }
+
+    return savedPatient;
   }
 
   findAllPatients() {
     return this.patientRepository.findAll();
+  }
+
+  findPatientById(patientId) {
+    return this.patientRepository.findById(patientId);
   }
 
   findPatientByName(name) {
@@ -46,7 +46,12 @@ export class PatientService {
       throw new Error('Patient not found');
     }
 
-    Object.assign(patient, updatedData);
+    if (updatedData.name) patient.name = updatedData.name;
+    if (updatedData.phoneNumber) patient.phoneNumber = updatedData.phoneNumber;
+    if (updatedData.email) patient.email = updatedData.email;
+    if (updatedData.emergencyContact)
+      patient.emergencyContact = updatedData.emergencyContact;
+    if (updatedData.address) patient.address = updatedData.address;
 
     this.patientRepository.update(patientId, patient);
     return patient;
