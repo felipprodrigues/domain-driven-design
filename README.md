@@ -12,11 +12,17 @@
 # Install dependencies
 npm install
 
-# Run the test example
-cd src && node testCase/testHospital.js
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm run coverage
 
 # Start the API server
 npm start
+
+# Development mode (with auto-reload)
+npm run dev
 
 # Visit health check
 curl http://localhost:3000/health
@@ -59,17 +65,46 @@ The project follows **Hexagonal Architecture** (Ports & Adapters) with clear sep
 src/
 ├── domain/              # Core business logic (no dependencies)
 │   ├── entities/       # Domain entities (Patient, Doctor, Appointment)
+│   │   └── record/    # Medical record entities
 │   ├── value-objects/  # Immutable value objects (Address, WorkingHours)
 │   ├── services/       # Domain services (business rules)
+│   │   └── doctor-service/ # Doctor-specific services
 │   └── repositories/   # Repository interfaces
 ├── application/        # Use cases and application services
+│   └── services/      # Application services
 ├── infrastructure/     # External concerns (DB, notifications)
 │   ├── persistance/   # Repository implementations
 │   └── notification/  # Notification services
-└── interfaces/        # Entry points (REST API, controllers)
-    ├── controllers/   # HTTP request handlers
-    ├── routes/        # API route definitions
-    └── main.js        # Application bootstrap
+├── interfaces/        # Entry points (REST API, controllers)
+│   ├── controllers/   # HTTP request handlers
+│   │   └── doctor-controllers/ # Doctor-specific controllers
+│   ├── routes/        # API route definitions
+│   └── main.js        # Application bootstrap
+└── testCase/          # Manual test examples
+
+tests/
+├── unit/              # Unit tests
+│   ├── domain/       # Domain layer tests
+│   │   ├── entities/
+│   │   ├── value-objects/
+│   │   └── services/
+│   └── infrastructure/ # Infrastructure tests
+├── integration/       # Integration tests
+│   ├── controllers/  # Controller integration tests
+│   ├── repositories/ # Repository integration tests
+│   └── workflows/    # Full workflow tests
+├── domain/            # Domain-focused tests
+├── asyncronous/       # Async pattern tests
+└── TESTING_TOOLS.md   # Testing documentation
+
+concepts/              # DDD learning resources
+└── architecture/      # Architecture pattern docs
+
+docs/                  # Project documentation
+
+.github/
+└── workflows/         # CI/CD pipelines
+    └── ci.yml        # GitHub Actions workflow
 ```
 
 ## 🏥 Domain Model
@@ -81,30 +116,60 @@ src/
 - Patient (root entity)
 - Medical Record
 - Allergies, Diagnoses, Treatments
+- Medications
 - Appointments and Examinations
 
 **Doctor Aggregate** - Manages doctor information and availability
 
 - Doctor (root entity)
 - Working Hours
-- Specialties
+- Specialties (array)
+- Availability management
+
+**Appointment Aggregate** - Manages appointment scheduling
+
+- Appointment (root entity)
+- Patient reference
+- Doctor reference
+- Status tracking
 
 ### Key Features
 
-- ✅ Patient management with medical records
-- ✅ Doctor scheduling and availability
-- ✅ Appointment booking with conflict detection
+- ✅ Patient management with comprehensive medical records
+- ✅ Doctor scheduling and availability tracking
+- ✅ Appointment booking with validation
 - ✅ Medical examination tracking
+- ✅ Diagnosis and medication management
 - ✅ Email notifications
 - ✅ RESTful API with Express.js
+- ✅ Automated testing with 60%+ coverage
+- ✅ CI/CD with GitHub Actions
 
 ## 🛠️ Technology Stack
 
+### Core
+
 - **Runtime**: Node.js 20+
 - **Language**: JavaScript (ES6+ modules)
-- **Web Framework**: Express.js
-- **Code Quality**: ESLint + Prettier
-- **Architecture**: Hexagonal/Clean Architecture
+- **Web Framework**: Express.js 4.18.2
+- **Architecture**: Hexagonal/Clean Architecture with DDD patterns
+
+### Testing
+
+- **Test Runner**: Mocha 11.7.5
+- **Assertions**: Chai 6.2.2 (BDD style)
+- **Test Doubles**: Sinon 21.0.1 (stubs, spies, mocks)
+- **Coverage**: c8 10.1.3 (HTML, LCOV, text reporters)
+
+### Code Quality
+
+- **Linter**: ESLint 8.57.0
+- **Formatter**: Prettier 3.1.1
+
+### CI/CD
+
+- **GitHub Actions**: Automated testing and coverage checks
+- **Coverage Threshold**: 50% (lines, functions, branches, statements)
 
 ## 📖 Learning Resources
 
@@ -131,8 +196,35 @@ src/
 
 ## 🧪 Testing
 
+### Automated Tests (38 tests)
+
 ```bash
-# Run the test case
+# Run all tests
+npm test
+
+# Run tests with coverage (60.68% overall)
+npm run coverage
+
+# Open HTML coverage report
+open coverage/index.html
+
+# Run specific test file
+npm test -- tests/integration/workflows/patient-appointment-workflow.test.js
+```
+
+### Test Coverage
+
+- **Entities**: Patient, Doctor, Appointment (100% covered)
+- **Value Objects**: Address, EmergencyContact, Allergy (100% covered)
+- **Repositories**: Repository pattern with Map storage
+- **Services**: PatientService, DoctorService (32-66% covered)
+- **Controllers**: PatientController integration tests
+- **Workflows**: Full patient appointment workflow test
+
+### Manual Testing
+
+```bash
+# Run manual test examples
 cd src && node testCase/testHospital.js
 
 # Test API endpoints
@@ -140,6 +232,15 @@ npm start &
 curl http://localhost:3000/api/patients
 curl http://localhost:3000/api/doctors
 ```
+
+### CI/CD
+
+GitHub Actions automatically runs:
+
+- All tests on every push
+- Coverage checks (minimum 50%)
+- ESLint validation
+- Runs on Node.js 18
 
 ## 📝 Code Quality
 
@@ -155,7 +256,17 @@ npm run format
 
 # Check formatting
 npm run format:check
+
+# Run full quality check
+npm run lint && npm run format:check && npm test
 ```
+
+### Quality Tools
+
+- **ESLint**: Catches common errors and enforces coding standards
+- **Prettier**: Ensures consistent code formatting
+- **Mocha + Chai**: Comprehensive test coverage
+- **c8**: Istanbul-based code coverage reporting
 
 ## 🤝 Contributing
 
